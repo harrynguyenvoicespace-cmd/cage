@@ -1,0 +1,12 @@
+{
+  "name": "r15-cage-lab",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node server.mjs",
+    "test": "node tools/check-cage-engine.mjs",
+    "verify": "node tools/check-fit.mjs",
+    "build:shirt": "node tools/build-shirt.mjs"
+  }
+}

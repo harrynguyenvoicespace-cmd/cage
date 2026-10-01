@@ -1,0 +1,10 @@
+node_modules/
+evidence/
+exports/
+.env
+.env.*
+*.log
+*.fbx
+*.blend
+*.ma
+*.zip
