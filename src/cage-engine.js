@@ -172,7 +172,7 @@ export function createSurface(mesh) {
     visit(root); hits.sort((a, b) => a.distance - b.distance);
     return hits.filter((h, i) => i === 0 || h.distance - hits[i - 1].distance > 1e-6);
   }
-  function distance(point, { robust = false, groups = null } = {}) {
+  function distance(point, { robust = false, groups = null, volume = false } = {}) {
     if (partSurfaces) {
       // R15 pieces overlap at joints. The union is inside when ANY piece is
       // inside; global ray parity over overlapping solids gives a wrong answer.
@@ -182,7 +182,7 @@ export function createSurface(mesh) {
         .sort((a, b) => a.lower - b.lower);
       for (const part of candidates) {
         if (best && ((best.signed < 0 && part.lower > 1e-10) || (best.signed >= 0 && part.lower > best.distance2))) continue;
-        const hit = part.surface.distance(point, { robust });
+        const hit = part.surface.distance(point, { robust, volume: true });
         if (!best || hit.signed < best.signed) best = { ...hit, part: part.name };
       }
       if (best) return best;
@@ -191,7 +191,12 @@ export function createSurface(mesh) {
     if (!hit) return { signed: Infinity, distance: Infinity, point, normal: [0, 0, 0] };
     const d = Math.sqrt(hit.distance2);
     let inside = dot(sub(point, hit.point), hit.normal) < -1e-8;
-    if (robust && d > 1e-6) inside = ray(point, normal([1, 0.3719, 0.1273])).length % 2 === 1;
+    // An open body part can produce an odd ray count even outside its bounds.
+    // A bounded volume cannot contain such a point. Keep normal-sided distance
+    // for standalone open surfaces used by the cage fitter.
+    const outsideBounds = boxDistance2(point, root) > 1e-12;
+    if (robust && d > 1e-6) inside = !outsideBounds && ray(point, normal([1, 0.3719, 0.1273])).length % 2 === 1;
+    else if (volume && outsideBounds) inside = false;
     return { ...hit, signed: inside ? -d : d, distance: d, inside };
   }
   function project(point,clearance=0.02,preferredDirection=null) {

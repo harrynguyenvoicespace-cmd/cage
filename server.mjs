@@ -12,7 +12,9 @@ createServer(async (req, res) => {
     if (req.method === 'POST' && url.pathname === '/api/export') {
       let body = ''; for await (const chunk of req) { body += chunk; if (body.length > 15_000_000) throw new Error('Export too large'); }
       const data = JSON.parse(body);
-      const tag = `${data.state?.garment || 'model'}-${data.state?.pose || 'stand'}-${Math.round((data.state?.width || 1) * 100)}`.replace(/[^a-z0-9_-]/gi, '');
+      const state = data.state || {};
+      const modes = [typeof state.fitContacts === 'boolean' ? `rest-${state.fitContacts ? 'on' : 'off'}` : null, typeof state.contact === 'boolean' ? `pose-${state.contact ? 'on' : 'off'}` : null, typeof state.fitted === 'boolean' ? (state.fitted ? 'fit' : 'source') : null].filter(Boolean).join('-');
+      const tag = `${state.mannequin ? state.mannequin + '-' : ''}${state.garment || 'model'}-${state.pose || 'stand'}-${Math.round((state.width || 1) * 100)}${modes ? '-' + modes : ''}`.replace(/[^a-z0-9_-]/gi, '');
       const name = `fitted-cage-${tag}.json`;
       await mkdir(resolve(root, 'exports'), { recursive: true });
       await writeFile(resolve(root, 'exports', name), JSON.stringify(data));

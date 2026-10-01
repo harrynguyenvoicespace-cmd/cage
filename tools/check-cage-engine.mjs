@@ -12,6 +12,11 @@ const rotated=deformWithCage(binding,rotate(triangle.positions));
 const expected=rotate(Array.from(garment));
 rotated.forEach((v,i)=>assert.ok(Math.abs(v-expected[i])<1e-6,'Transport must reproduce a rigid cage rotation.'));
 assert.throws(()=>createSurface({positions:[NaN,0,0,1,0,0,0,1,0],indices:[0,1,2]}),/non-finite/);
+const openSurface=createSurface(triangle);
+assert.ok(openSurface.distance([.4,.3,-.2],{robust:true}).signed>0,'An odd ray through an open surface cannot put a point outside its bounds inside a volume.');
+assert.ok(openSurface.distance([.4,.3,-.2]).signed<0,'Standalone open surfaces must retain normal-sided distance for cage fitting.');
+const openBody=createSurface(mergeBodyParts([{...triangle,name:'OpenPart'}]));
+assert.ok(openBody.distance([.4,.3,-.2]).signed>0,'Body-union parts must reject volume membership outside their bounds even in normal mode.');
 
 function cube(name,cx=0) {
   const positions=[-1,-1,-1, 1,-1,-1, 1,1,-1, -1,1,-1, -1,-1,1, 1,-1,1, 1,1,1, -1,1,1];
@@ -45,7 +50,7 @@ for(let i=0;i<fit.sourceCage.positions.length/3;i++) {
   const x=Math.abs(fit.sourceCage.positions[i*3]),y=fit.sourceCage.positions[i*3+1];
   if(x>1.35&&y<2.76&&y>2.60)assert.ok(fit.influences[i].every(w=>/Arm|Hand/.test(w.name)),'Template hands must follow arm bones, not legs.');
 }
-console.log('9 meaningful cage-engine checks passed: identity, rotation, finite input, union, union projection, edge intersection, partial-influence enclosure, template topology/UV, arm influences.');
+console.log('10 meaningful cage-engine checks passed: identity, rotation, finite input, bounded open-body volumes, union, union projection, edge intersection, partial-influence enclosure, template topology/UV, arm influences.');
 if(process.argv.includes('--legacy'))console.log(JSON.stringify(fit.diagnostics,(key,value)=>key==='distances'||key==='badVertices'?undefined:value,2));
 if(fs.existsSync(new URL('../assets/r15-shirt.json',import.meta.url))) {
   const independent=load('r15-shirt'),core=createR15GarmentFit(cageAsset,independent,body);

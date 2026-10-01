@@ -1,10 +1,12 @@
 import * as THREE from '../vendor/three/three.module.js';
 import { OrbitControls } from '../vendor/three/OrbitControls.js';
 import { GLTFLoader } from '../vendor/three/GLTFLoader.js';
-import { createDemoFit, createR15GarmentFit, rebindWithCorrespondence, deformWithCage, createSurface, mergeBodyParts, diagnoseMesh } from './cage-engine.js';
+import { createDemoFit, createR15GarmentFit, rebindWithCorrespondence, deformWithCage, createSurface, mergeBodyParts, diagnoseMesh, meshBounds } from './cage-engine.js';
 import { createR15Poser, posePoints } from './r15-pose.js';
 import { windingNumbers } from './diagnostics.js';
 import { solveCageContacts } from './cage-contact.js';
+import { GARMENT_CATALOG } from './garment-catalog.js';
+import { createMannequinGarmentFit } from './mannequin-fit.js';
 
 const $ = id => document.getElementById(id);
 const host = $('viewport');
@@ -20,7 +22,7 @@ renderer.toneMapping = THREE.ACESFilmicToneMapping;
 renderer.toneMappingExposure = 1.15;
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFShadowMap;
-renderer.domElement.setAttribute('aria-label', 'R15 mặc áo và cage 3D. Kéo để xoay, cuộn để zoom.');
+renderer.domElement.setAttribute('aria-label', 'Mannequin mặc áo và cage 3D. Kéo để xoay, cuộn để zoom.');
 renderer.domElement.tabIndex = 0;
 host.prepend(renderer.domElement);
 const controls = new OrbitControls(camera, renderer.domElement);
@@ -38,12 +40,38 @@ floor.rotation.x = -Math.PI / 2; floor.position.y = -.035; floor.receiveShadow =
 const grid = new THREE.GridHelper(36, 36, '#b8c4d0', '#c9d2dc'); grid.position.y = -.032; grid.material.transparent = true; grid.material.opacity = .48; scene.add(grid);
 const bodyGroup = new THREE.Group(), cageGroup = new THREE.Group(); scene.add(bodyGroup, cageGroup);
 const bodyMeshes = new Map();
-let garmentMesh, innerWire, outerWire, demo, poser, assetCage, assetShirt, assetBody, garmentAssets, targetSeed, restBindings;
-let current = null, metrics = null, ready = false, fitting = false, frameNumber = 0, lastTime = 0, walkStarted = 0, fitVersion = 13;
-const state = { width: 1, pose: 'stand', garment: 'r15', contact: false, projection: new URL(location.href).searchParams.get('projection') === 'regional' ? 'regional' : 'union', fitted: true, playing: true };
-const garmentColors = { r15:'#078d96', long:'#426fa7', sweater:'#7855a0', jacket:'#bd694d', roblox:'#078d96' };
+let originalHeadMaterial;
+const importedHeadMaterial = new THREE.MeshStandardMaterial({ color: '#c0cbd6', roughness: .88 });
+let garmentMesh, innerWire, outerWire, demo, poser, assetCage, assetShirt, assetBody, garmentAssets, targetSeed, restBindings, sourceBody, sourceSeed;
+const mannequinAssets = new Map(), sourceFits = new Map(), mannequinFits = new Map();
+let current = null, metrics = null, ready = false, fitting = false, frameNumber = 0, lastTime = 0, walkStarted = 0, fitVersion = 16;
+const state = { mannequin: 'r15', width: 1, pose: 'stand', garment: 'r15', fitContacts: true, contact: false, projection: new URL(location.href).searchParams.get('projection') === 'regional' ? 'regional' : 'union', fitted: true, playing: true };
+const garmentColors = { ...Object.fromEntries(GARMENT_CATALOG.map(entry => [entry.id, entry.color])), roblox:'#078d96' };
+const garmentEntry = () => GARMENT_CATALOG.find(entry => entry.id === state.garment);
 const fitOptions = () => ({ targetSeed, projectionMode: state.projection });
-const makeFit = () => state.garment !== 'roblox' ? createR15GarmentFit(assetCage, assetShirt, assetBody, fitOptions()) : createDemoFit(assetCage, assetShirt, assetBody, fitOptions());
+const mannequinEntry = () => mannequinAssets.get(state.mannequin);
+function makeFit() {
+  if (state.garment === 'roblox') return createDemoFit(assetCage, assetShirt, assetBody, fitOptions());
+  const key = `${state.garment}:${state.projection}`;
+  if (!sourceFits.has(key)) sourceFits.set(key, createR15GarmentFit(assetCage, assetShirt, sourceBody, { targetSeed: sourceSeed, projectionMode: state.projection }));
+  const sourceFit = sourceFits.get(key);
+  if (state.mannequin === 'r15') return sourceFit;
+  const targetKey = `${state.mannequin}:${key}:${state.fitContacts}`;
+  if (!mannequinFits.has(targetKey)) mannequinFits.set(targetKey, createMannequinGarmentFit(assetCage, assetShirt, sourceBody, assetBody, {
+    ...fitOptions(), sourceSeed, sourceFit, sourceId: 'r15', targetId: state.mannequin, fitContacts: state.fitContacts,
+  }));
+  return mannequinFits.get(targetKey);
+}
+
+function rebuildBody(body) {
+  for (const part of body.parts) {
+    const mesh = bodyMeshes.get(part.name);
+    if (!mesh) throw new Error(`Không tìm thấy phần body: ${part.name}`);
+    mesh.geometry.dispose(); mesh.geometry = geometryOf(part);
+    if (part.name === 'Head') mesh.material = body === sourceBody ? originalHeadMaterial : importedHeadMaterial;
+  }
+  assetBody = body; poser = createR15Poser(body);
+}
 
 function geometryOf(mesh) {
   const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(mesh.positions, 3));
@@ -75,7 +103,10 @@ function visibility() {
   if (outerWire) outerWire.visible = $('show-outer').checked;
 }
 function labels() {
-  $('state-label').textContent = `${state.width > 1.01 ? 'R15 rộng' : 'R15 gốc'} · ${state.fitted ? 'Sau fit' : 'Trước fit'} · ${state.pose === 'arms' ? 'Giơ tay' : state.pose === 'walk' ? 'Đi bộ' : 'Đứng'}`;
+  $('state-label').textContent = `${garmentEntry()?.label || 'Áo Roblox'} · ${mannequinEntry()?.label || 'R15'}${state.width > 1.01 ? ' rộng' : ''} · ${state.fitted ? 'Sau fit' : 'Trước fit'} · ${state.pose === 'arms' ? 'Giơ tay' : state.pose === 'walk' ? 'Đi bộ' : 'Đứng'}`;
+  $('mannequin-type').value = state.mannequin;
+  $('mannequin-note').textContent = state.mannequin === 'r15' ? 'Body R15 ban đầu.' : 'Body và cage từ FBX bạn gửi. Tư thế dùng khớp mô phỏng.';
+  $('garment-type').querySelector('option[value="roblox"]').disabled = state.mannequin !== 'r15';
   $('body-width-value').value = state.width.toFixed(2) + '×'; $('body-width').value = state.width;
   document.querySelectorAll('[data-body]').forEach(b => b.classList.toggle('selected', b.dataset.body === (state.width > 1.01 ? 'wide' : 'original')));
   document.querySelectorAll('[data-pose]').forEach(b => b.classList.toggle('selected', b.dataset.pose === state.pose));
@@ -83,6 +114,9 @@ function labels() {
   $('toggle-play').hidden = state.pose !== 'walk'; $('toggle-play').textContent = state.playing ? 'Tạm dừng' : 'Chạy tiếp';
   $('contact-fix').disabled = state.garment === 'roblox' || (state.pose === 'walk' && state.playing);
   $('contact-fix').checked = state.contact;
+  $('fit-body-contact-option').hidden = $('fit-body-contact-note').hidden = state.mannequin === 'r15';
+  $('fit-body-contact').checked = state.fitContacts;
+  $('fit-body-contact').disabled = fitting || state.mannequin === 'r15';
 }
 function frameScene() {
   if (!current || camera.aspect <= 0) return;
@@ -99,8 +133,9 @@ function renderState(time = 0, measure = false) {
   if (!ready) return;
   const posed = poser.getState({ width: state.width, pose: state.pose, time });
   for (const part of posed.parts) updateGeometry(bodyMeshes.get(part.name), part.positions);
-  let inner = state.fitted ? posePoints(demo.innerPositions, demo.influences, posed) : Float32Array.from(demo.sourceCage.positions);
-  const outer = state.fitted ? posePoints(demo.outerPositions, demo.outerInfluences || demo.influences, posed) : Float32Array.from(demo.sourceCage.positions);
+  const originalFit = sourceFits.get(`${state.garment}:${state.projection}`);
+  let inner = state.fitted ? posePoints(demo.innerPositions, demo.influences, posed) : Float32Array.from(originalFit?.innerPositions || demo.sourceCage.positions);
+  const outer = state.fitted ? posePoints(demo.outerPositions, demo.outerInfluences || demo.influences, posed) : Float32Array.from(originalFit?.outerPositions || demo.sourceCage.positions);
   let garment = state.fitted ? deformWithCage(restBindings, inner) : Float32Array.from(demo.sourceGarment.positions), contactReport = null;
   if (state.fitted && state.contact && state.garment !== 'roblox') {
     const baseInner = inner;
@@ -128,11 +163,16 @@ function measureCurrent() {
     if (Math.abs(winding[i / 3]) > 1.5) overlap++;
   }
   metrics = { ...checked, distances: undefined, badVertices: undefined, penetrationPercent: checked.penetrationSamples / checked.sampleCount * 100, outsideVertices: outside, overlapVertices: overlap, parityOutsideVertices: parityOutside, enclosureMethod: 'generalized winding; abs(w)>0.5 inside; abs(w)>1.5 overlapping volumes; 0.003 stud surface tolerance', garmentVertices: current.garment.length / 3, outsidePercent: outside / (current.garment.length / 3) * 100, overlapPercent: overlap / (current.garment.length / 3) * 100, cageVertices: current.inner.length / 3, topologyPreserved: current.inner.length === assetCage.inner.positions.length };
-  $('penetration').textContent = metrics.penetrationPercent.toFixed(2) + '%'; $('penetration').className = metrics.penetrationPercent < .1 ? 'ok' : 'bad';
+  $('penetration').textContent = metrics.penetrationPercent.toFixed(2) + '%'; $('penetration').className = checked.penetrationSamples === 0 ? 'ok' : 'bad';
   $('outside').textContent = metrics.outsidePercent.toFixed(1) + '%'; $('outside').className = outside === 0 ? 'ok' : 'bad';
   $('overlap').textContent = metrics.overlapPercent.toFixed(1) + '%'; $('overlap').className = overlap === 0 ? 'ok' : 'bad';
   $('topology').textContent = metrics.cageVertices.toLocaleString('en-US') + ' · giữ nguyên';
-  $('algorithm-note').textContent = state.fitted ? (state.garment !== 'roblox' ? 'Cage blocky ghép bằng UV; cùng thuật toán MLS cho mọi kiểu áo.' : `Retarget áo Roblox: ${demo.history.length} bước tối ưu. Còn lỗi fit ở vai.`) : 'Cage mẫu chưa fit vào R15; áo giữ vị trí nguồn.';
+  const mannequinNote = demo.transfer?.collisionRepairApplied
+    ? 'Cage FBX ghép bằng UV; đã xử lý tiếp xúc body khi fit. Mesh và UV áo giữ nguyên.'
+    : demo.restContact?.accepted === false
+      ? 'Chống xuyên làm méo áo nên chưa áp dụng; đang giữ kết quả chuyển cage gốc.'
+      : 'Cage FBX ghép bằng UV; giữ nguyên mesh áo, dùng liên kết MLS nguồn đã ổn định.';
+  $('algorithm-note').textContent = state.fitted ? (state.garment !== 'roblox' ? (state.mannequin === 'r15' ? 'Cage blocky ghép bằng UV; cùng thuật toán MLS cho mọi kiểu áo.' : mannequinNote) : `Retarget áo Roblox: ${demo.history.length} bước tối ưu. Còn lỗi fit ở vai.`) : (state.garment === 'roblox' ? 'Áo Roblox và cage mẫu giữ vị trí nguồn.' : 'Áo và cage giữ vị trí nguồn R15 trước khi chuyển sang body đã chọn.');
 }
 function toast(text) { $('toast').textContent = text; $('toast').classList.add('visible'); clearTimeout(toast.timer); toast.timer = setTimeout(() => $('toast').classList.remove('visible'), 3200); }
 function setView(side) {
@@ -140,12 +180,13 @@ function setView(side) {
   camera.position.set(...directions[side]); controls.target.set(0, 2.6, 0); controls.update();
   frameScene();
 }
-function snapshotData() { return { state: { ...state, time: current.time }, metrics, fitVersion, initialization: demo.initialization, targetSeedProvenance: demo.targetSeedProvenance, bindingStatistics: demo.bindings.statistics, contactReport: current.contactReport, diagnostics: { before: demo.diagnostics.before, after: demo.diagnostics.after, topology: demo.diagnostics.topology }, history: demo.history }; }
+function mannequinData() { return { id: state.mannequin, label: mannequinEntry().label, bodyFile: mannequinEntry().bodyFile || 'assets/r15-body.json', source: assetBody.source, normalization: assetBody.normalization, rigSource: assetBody.rigSource || 'original R15 joints', transfer: demo.transfer || null }; }
+function snapshotData() { return { state: { ...state, time: current.time }, mannequin: mannequinData(), metrics, fitVersion, initialization: demo.initialization, targetSeedProvenance: demo.targetSeedProvenance, bindingStatistics: demo.bindings.statistics, contactReport: current.contactReport, diagnostics: { before: demo.diagnostics.before, after: demo.diagnostics.after, topology: demo.diagnostics.topology }, history: demo.history }; }
 async function capture() {
   if (!ready) return;
   if (state.pose === 'walk') { state.playing = false; labels(); }
   measureCurrent(); renderer.render(scene, camera);
-  const name = `round-${String(fitVersion).padStart(2, '0')}-${state.garment}-${state.contact ? 'contact' : 'raw'}-${state.fitted ? 'fit' : 'source'}-${state.pose}-${Math.round(state.width * 100)}`;
+  const name = `round-${String(fitVersion).padStart(2, '0')}-${state.mannequin}-${state.garment}-${state.fitContacts ? 'rest-on' : 'rest-off'}-${state.contact ? 'pose-on' : 'pose-off'}-${state.fitted ? 'fit' : 'source'}-${state.pose}-${Math.round(state.width * 100)}`;
   const response = await fetch('/api/evidence', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name, image: renderer.domElement.toDataURL('image/png'), ...snapshotData() }) });
   if (!response.ok) throw new Error('Không lưu được ảnh');
   toast(`Đã lưu evidence/${name}.png`);
@@ -153,21 +194,23 @@ async function capture() {
 async function download() {
   if (state.pose === 'walk') { state.playing = false; labels(); }
   measureCurrent();
-  const output = { schemaVersion: 1, source: assetCage.source, targetSeedProvenance: demo.targetSeedProvenance, units: 'stud', axis: 'Y-up', state: { ...state, time: current.time }, inner: { ...assetCage.inner, positions: Array.from(current.inner) }, outer: { ...assetCage.outer, positions: Array.from(current.outer) }, garment: { ...assetShirt, positions: Array.from(current.garment) }, metrics };
+  const output = { schemaVersion: 1, source: assetCage.source, mannequin: mannequinData(), targetSeedProvenance: demo.targetSeedProvenance, contactReport: current.contactReport || null, units: 'stud', axis: 'Y-up', state: { ...state, time: current.time }, authoredInner: demo.authoredInnerPositions ? { ...assetCage.inner, positions: Array.from(demo.authoredInnerPositions), bounds: meshBounds(demo.authoredInnerPositions) } : null, inner: { ...assetCage.inner, positions: Array.from(current.inner), bounds: meshBounds(current.inner) }, outer: { ...assetCage.outer, positions: Array.from(current.outer), bounds: meshBounds(current.outer) }, garment: { ...assetShirt, positions: Array.from(current.garment), bounds: meshBounds(current.garment) }, metrics };
   const response = await fetch('/api/export', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(output) });
   if (!response.ok) throw new Error('Không xuất được snapshot');
   const saved = await response.json();
   $('export-link').href = saved.url; $('export-link').download = saved.name; $('export-link').hidden = false;
   toast(`Đã lưu exports/${saved.name}`);
 }
-async function refit() {
+async function refit(prepare = null) {
   if (fitting) return;
   fitting = true;
-  for (const id of ['auto-fit','capture','download','garment-type']) $(id).disabled = true;
+  for (const id of ['auto-fit','capture','download','garment-type','mannequin-type','fit-body-contact']) $(id).disabled = true;
   document.querySelectorAll('[data-body],[data-pose],#body-width,#before,#after,#contact-fix').forEach(control => { control.disabled = true; });
   $('auto-fit').textContent = 'Đang tối ưu…';
   try {
     await new Promise(resolve => requestAnimationFrame(resolve));
+    if (prepare) prepare();
+    $('export-link').hidden = true;
     demo = makeFit();
     restBindings = state.garment !== 'roblox' ? demo.bindings : rebindWithCorrespondence(demo.bindings, demo.innerPositions, demo.garmentPositions);
     garmentMesh.geometry.dispose(); garmentMesh.geometry = geometryOf({ ...assetShirt, positions: demo.garmentPositions });
@@ -176,20 +219,37 @@ async function refit() {
     toast('Đã fit cage và cập nhật trang phục');
   } finally {
     fitting = false;
-    for (const id of ['auto-fit','capture','download','garment-type']) $(id).disabled = false;
+    for (const id of ['auto-fit','capture','download','garment-type','mannequin-type']) $(id).disabled = false;
     document.querySelectorAll('[data-body],[data-pose],#body-width,#before,#after').forEach(control => { control.disabled = false; });
     labels();
     $('auto-fit').textContent = 'Tự fit cage';
   }
 }
 async function init() {
-  let originalShirt, newShirt, longShirt, sweater, jacket;
-  [assetCage, originalShirt, assetBody, newShirt, longShirt, sweater, jacket, targetSeed] = await Promise.all(['roblox-cage', 'roblox-tshirt', 'r15-body', 'r15-shirt', 'r15-long-shirt', 'r15-wide-sweater', 'r15-jacket', 'blocky-cage-target'].map(name => fetch(`/assets/${name}.json`).then(r => { if (!r.ok) throw new Error(name + ' không tải được'); return r.json(); })));
-  garmentAssets = { r15: newShirt, long: longShirt, sweater, jacket, roblox: originalShirt }; assetShirt = newShirt;
+  const filenames = ['roblox-cage.json', 'roblox-tshirt.json', 'r15-body.json', 'blocky-cage-target.json', ...GARMENT_CATALOG.map(entry => entry.filename)];
+  const [cage, originalShirt, body, seed, ...garments] = await Promise.all(filenames.map(filename => fetch(`/assets/${filename}`).then(r => { if (!r.ok) throw new Error(filename + ' không tải được'); return r.json(); })));
+  assetCage = cage; assetBody = sourceBody = body; targetSeed = sourceSeed = seed;
+  const catalog = await fetch('/assets/mannequins/catalog.json').then(r => { if (!r.ok) throw new Error('Không tải được danh sách mannequin'); return r.json(); });
+  mannequinAssets.set('r15', { id: 'r15', label: 'R15 ban đầu', body, seed });
+  await Promise.all(catalog.entries.map(async entry => {
+    const [targetBody, cageSeed] = await Promise.all([entry.bodyFile, entry.targetSeedFile].map(filename => fetch('/' + filename).then(r => { if (!r.ok) throw new Error(filename + ' không tải được'); return r.json(); })));
+    mannequinAssets.set(entry.id, { ...entry, body: targetBody, seed: cageSeed });
+  }));
+  $('mannequin-type').replaceChildren(new Option('R15 ban đầu', 'r15'), ...catalog.entries.map(entry => new Option(entry.label, entry.id)));
+  garmentAssets = { ...Object.fromEntries(GARMENT_CATALOG.map((entry, i) => [entry.id, garments[i]])), roblox: originalShirt }; assetShirt = garmentAssets.r15;
+  const families = new Map();
+  for (const entry of GARMENT_CATALOG) {
+    if (!families.has(entry.family)) { const group = document.createElement('optgroup'); group.label = entry.family; families.set(entry.family, group); }
+    families.get(entry.family).append(new Option(entry.label, entry.id));
+  }
+  const experiment = document.createElement('optgroup'); experiment.label = 'Thử nghiệm';
+  experiment.append(new Option('Áo Roblox · retarget thử nghiệm', 'roblox'));
+  $('garment-type').replaceChildren(...families.values(), experiment);
   const gltf = await new GLTFLoader().loadAsync('/assets/r15.glb');
   let bodyMaterial; gltf.scene.traverse(obj => { if (obj.isMesh && !bodyMaterial) bodyMaterial = obj.material.clone(); });
   if (bodyMaterial) { bodyMaterial.roughness = .86; bodyMaterial.metalness = 0; }
   else bodyMaterial = new THREE.MeshStandardMaterial({ color: '#b9c6d3', roughness: .9 });
+  originalHeadMaterial = bodyMaterial;
   for (const part of assetBody.parts) { const material = part.name === 'Head' ? bodyMaterial : new THREE.MeshStandardMaterial({ color: /Leg|Foot/.test(part.name) ? '#65758a' : '#c0cbd6', roughness: .88 }); const mesh = new THREE.Mesh(geometryOf(part), material); mesh.name = part.name; mesh.castShadow = true; mesh.receiveShadow = true; bodyGroup.add(mesh); bodyMeshes.set(part.name, mesh); }
   gltf.scene.traverse(obj => { if (obj.isMesh) obj.geometry.dispose(); });
   demo = makeFit();
@@ -198,7 +258,7 @@ async function init() {
   garmentMesh = new THREE.Mesh(geometryOf({ ...assetShirt, positions: demo.garmentPositions }), new THREE.MeshStandardMaterial({ color: '#078d96', roughness: .78, metalness: 0, side: THREE.DoubleSide }));
   garmentMesh.castShadow = true; garmentMesh.receiveShadow = true; garmentMesh.frustumCulled = false; scene.add(garmentMesh);
   innerWire = makeWire(assetCage.inner, '#287fd5'); outerWire = makeWire(assetCage.outer, '#ed922b');
-  ready = true; $('loading').classList.add('hidden'); $('auto-fit').disabled = false; $('capture').disabled = false; $('download').disabled = false; $('garment-type').disabled = false;
+  ready = true; $('loading').classList.add('hidden'); $('auto-fit').disabled = false; $('capture').disabled = false; $('download').disabled = false; $('garment-type').disabled = false; $('mannequin-type').disabled = false;
   $('garment-note').textContent = `Mesh mới độc lập · ${Math.round(assetShirt.indices.length / 3).toLocaleString('en-US')} tam giác.`;
   renderState(0, true); visibility(); labels(); frameScene();
 }
@@ -210,9 +270,22 @@ $('after').addEventListener('click', () => { state.fitted = true; labels(); rend
 $('body-width').addEventListener('input', event => { state.width = Number(event.target.value); labels(); renderState(lastTime, false); frameScene(); clearTimeout(measureCurrent.timer); measureCurrent.timer = setTimeout(measureCurrent, 250); });
 $('capture').addEventListener('click', () => capture().catch(e => toast(e.message)));
 $('auto-fit').addEventListener('click', () => refit().catch(e => toast(e.message)));
-$('garment-type').addEventListener('change', event => { if (!ready) return; state.garment = event.target.value; if (state.garment === 'roblox') state.contact = false; assetShirt = garmentAssets[state.garment]; $('garment-note').textContent = state.garment !== 'roblox' ? `Mesh độc lập · ${Math.round(assetShirt.indices.length / 3).toLocaleString('en-US')} tam giác.` : 'Mesh mẫu Roblox; thử retarget sang body khối.'; refit().catch(e => toast(e.message)); });
+$('garment-type').addEventListener('change', event => { if (!ready) return; state.garment = event.target.value; if (state.garment === 'roblox') state.contact = false; assetShirt = garmentAssets[state.garment]; $('garment-note').textContent = state.garment !== 'roblox' ? `${garmentEntry().description} ${Math.round(assetShirt.indices.length / 3).toLocaleString('en-US')} tam giác.` : 'Mesh mẫu Roblox; thử retarget sang body khối.'; refit().catch(e => toast(e.message)); });
+$('mannequin-type').addEventListener('change', event => {
+  if (!ready) return;
+  const id = event.target.value;
+  refit(() => {
+    state.mannequin = id; state.contact = false;
+    if (id !== 'r15' && state.garment === 'roblox') {
+      state.garment = 'r15'; assetShirt = garmentAssets.r15; $('garment-type').value = 'r15';
+      $('garment-note').textContent = garmentEntry().description;
+    }
+    const selected = mannequinAssets.get(id); targetSeed = selected.seed; rebuildBody(selected.body);
+  }).catch(e => toast(e.message));
+});
 $('download').addEventListener('click', () => download().catch(e => toast(e.message)));
 $('contact-fix').addEventListener('change', () => { state.contact = $('contact-fix').checked; labels(); renderState(lastTime,true); frameScene(); });
+$('fit-body-contact').addEventListener('change', () => { state.fitContacts = $('fit-body-contact').checked; refit().catch(e => toast(e.message)); });
 $('reset-view').addEventListener('click', () => setView('reset'));
 for (const side of ['front', 'side', 'back']) $('view-' + side).addEventListener('click', () => setView(side));
 $('toggle-play').addEventListener('click', () => { state.playing = !state.playing; if (state.playing) { state.contact = false; walkStarted = performance.now() / 1000 - lastTime; for (const id of ['penetration','outside','overlap']) $(id).textContent = '—'; $('algorithm-note').textContent = 'Dừng hoặc chụp để đo tư thế hiện tại.'; } else measureCurrent(); labels(); });

@@ -1,0 +1,250 @@
+{
+  "schemaVersion": 1,
+  "entries": [
+    {
+      "id": "classic",
+      "label": "Classic Mannequin",
+      "bodyFile": "assets/mannequins/classic-body.json",
+      "targetSeedFile": "assets/mannequins/classic-cage-target.json",
+      "cagesFile": "assets/mannequins/classic-cages.json",
+      "sourceFiles": [
+        {
+          "file": "assets/mannequins/source/ClassicMannequin_With-Cages.fbx",
+          "sha256": "72eb65745962a377d9e78500eb2961f4abe3f1b0f4be74ef20cd346435c76ef1"
+        }
+      ],
+      "diagnostics": {
+        "vertexCount": 1358,
+        "sourceControlPointCount": 1362,
+        "uvMatchedVertices": 1358,
+        "matchedVertexCount": 1358,
+        "interpolatedVertices": 0,
+        "fallbackVertices": 0,
+        "ownershipMatchedVertices": 1358,
+        "ownershipFallbackVertices": 0,
+        "mergedCanonicalVertices": 4,
+        "maximumDuplicateSpread": 0.018246019120139,
+        "maximumUvResidual": 0,
+        "maximumPartCageCoordinateResidual": 0.020299643278121785,
+        "orientedCanonicalPolygonTopologyVerified": true,
+        "influenceWeightsNormalized": true,
+        "targetBounds": {
+          "min": [
+            -1.7732276916503906,
+            -0.003496206629417742,
+            -0.608497118340927
+          ],
+          "max": [
+            1.7732288837432861,
+            4.998625220034389,
+            0.5600797292485133
+          ],
+          "size": [
+            3.5464565753936768,
+            5.002121426663806,
+            1.1685768475894402
+          ],
+          "center": [
+            5.960464477539062e-7,
+            2.4975645067024854,
+            -0.024208694546206833
+          ]
+        },
+        "bodyParts": 15,
+        "bodyVertices": 3381,
+        "bodyTriangles": 6418,
+        "bodyBounds": {
+          "min": [
+            -1.755751371383667,
+            0,
+            -0.5665290004040787
+          ],
+          "max": [
+            1.755751371383667,
+            4.976891532559248,
+            0.5665290004040787
+          ],
+          "size": [
+            3.511502742767334,
+            4.976891532559248,
+            1.1330580008081574
+          ],
+          "center": [
+            0,
+            2.488445766279624,
+            0
+          ]
+        },
+        "rigSource": "inferred-from-authored-part-cage-seams; FBX contains no skin clusters or skeleton",
+        "pairingValidated": false
+      }
+    },
+    {
+      "id": "rthro",
+      "label": "Rthro Mannequin",
+      "bodyFile": "assets/mannequins/rthro-body.json",
+      "targetSeedFile": "assets/mannequins/rthro-cage-target.json",
+      "cagesFile": "assets/mannequins/rthro-cages.json",
+      "sourceFiles": [
+        {
+          "file": "assets/mannequins/source/RthroMannequin_With-Cages.fbx",
+          "sha256": "e8519448131dde042830bce938cca86f211ef535ad80713b1938d3512320b249"
+        },
+        {
+          "file": "assets/mannequins/source/RthroMannequin.fbx",
+          "sha256": "e6db9e67326b9f5adc8ac47cf62903217d82e4554d19a65eca4281c4f104d838"
+        }
+      ],
+      "diagnostics": {
+        "vertexCount": 1358,
+        "sourceControlPointCount": 1358,
+        "uvMatchedVertices": 1358,
+        "matchedVertexCount": 1358,
+        "interpolatedVertices": 0,
+        "fallbackVertices": 0,
+        "ownershipMatchedVertices": 1358,
+        "ownershipFallbackVertices": 0,
+        "mergedCanonicalVertices": 0,
+        "maximumDuplicateSpread": 0,
+        "maximumUvResidual": 0,
+        "maximumPartCageCoordinateResidual": 0.0000015248774058182278,
+        "orientedCanonicalPolygonTopologyVerified": true,
+        "influenceWeightsNormalized": true,
+        "targetBounds": {
+          "min": [
+            -1.423156739716345,
+            -0.011161402879706017,
+            -0.5071810337531064
+          ],
+          "max": [
+            1.4231266961051883,
+            6.295729323209771,
+            0.533113136626532
+          ],
+          "size": [
+            2.846283435821533,
+            6.306890726089477,
+            1.0402941703796384
+          ],
+          "center": [
+            -0.000015021805578330216,
+            3.1422839601650323,
+            0.012966051436712811
+          ]
+        },
+        "bodyParts": 15,
+        "bodyVertices": 4315,
+        "bodyTriangles": 8478,
+        "bodyBounds": {
+          "min": [
+            -1.4042136366401956,
+            0,
+            -0.4927328565850957
+          ],
+          "max": [
+            1.4042136366401954,
+            6.267047747588579,
+            0.4927328565850958
+          ],
+          "size": [
+            2.808427273280391,
+            6.267047747588579,
+            0.9854657131701915
+          ],
+          "center": [
+            -1.1102230246251565e-16,
+            3.1335238737942896,
+            5.551115123125783e-17
+          ]
+        },
+        "rigSource": "inferred-from-authored-part-cage-seams; FBX contains no skin clusters or skeleton",
+        "pairingValidated": true
+      }
+    },
+    {
+      "id": "rthro-slender",
+      "label": "Rthro Slender Mannequin",
+      "bodyFile": "assets/mannequins/rthro-slender-body.json",
+      "targetSeedFile": "assets/mannequins/rthro-slender-cage-target.json",
+      "cagesFile": "assets/mannequins/rthro-slender-cages.json",
+      "sourceFiles": [
+        {
+          "file": "assets/mannequins/source/RthroSlenderMannequin_With-Cages.fbx",
+          "sha256": "e1f92f00e37e98095a0e14e4254a35d1f87c190c780c447f0c684eff9694b532"
+        },
+        {
+          "file": "assets/mannequins/source/RthroSlenderMannequin.fbx",
+          "sha256": "995a0a4af01e5299be8e77d96f75c11bd48b5d88ae65568e0f4bb523b6e28a1a"
+        }
+      ],
+      "diagnostics": {
+        "vertexCount": 1358,
+        "sourceControlPointCount": 1358,
+        "uvMatchedVertices": 1358,
+        "matchedVertexCount": 1358,
+        "interpolatedVertices": 0,
+        "fallbackVertices": 0,
+        "ownershipMatchedVertices": 1358,
+        "ownershipFallbackVertices": 0,
+        "mergedCanonicalVertices": 0,
+        "maximumDuplicateSpread": 0,
+        "maximumUvResidual": 0,
+        "maximumPartCageCoordinateResidual": 0.0000013180580370125764,
+        "orientedCanonicalPolygonTopologyVerified": true,
+        "influenceWeightsNormalized": true,
+        "targetBounds": {
+          "min": [
+            -1.0674893197468993,
+            -0.005973343259665143,
+            -0.457606777600984
+          ],
+          "max": [
+            1.0674894514628175,
+            6.0356539327855305,
+            0.4559932808835554
+          ],
+          "size": [
+            2.134978771209717,
+            6.041627276045196,
+            0.9136000584845394
+          ],
+          "center": [
+            6.585795908620184e-8,
+            3.0148402947629327,
+            -0.0008067483587143043
+          ]
+        },
+        "bodyParts": 15,
+        "bodyVertices": 4418,
+        "bodyTriangles": 8680,
+        "bodyBounds": {
+          "min": [
+            -1.051920238015433,
+            0,
+            -0.4396975948277045
+          ],
+          "max": [
+            1.051920238015433,
+            6.00745084896995,
+            0.43969759482770454
+          ],
+          "size": [
+            2.103840476030866,
+            6.00745084896995,
+            0.8793951896554091
+          ],
+          "center": [
+            0,
+            3.003725424484975,
+            2.7755575615628914e-17
+          ]
+        },
+        "rigSource": "inferred-from-authored-part-cage-seams; FBX contains no skin clusters or skeleton",
+        "pairingValidated": true
+      }
+    }
+  ],
+  "sourceFileCount": 5,
+  "generatedBy": "tools/import-mannequins.mjs",
+  "importPolicy": "Use the actual 15 source body meshes. Import all source cages without modifying topology; canonical targets are reordered by verified polygon-corner UV correspondence. No authored rig is present; motion is a Cage Lab inferred-joint demonstration."
+}

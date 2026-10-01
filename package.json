@@ -5,8 +5,13 @@
   "type": "module",
   "scripts": {
     "start": "node server.mjs",
-    "test": "node tools/check-cage-engine.mjs",
+    "test": "node tools/check-cage-engine.mjs && node tools/check-garment-variants.mjs && node tools/check-mannequins.mjs && node tools/check-mannequin-contact.mjs",
+    "test:variants": "node tools/check-garment-variants.mjs",
+    "test:mannequins": "node tools/check-mannequins.mjs",
+    "test:contacts": "node tools/check-mannequin-contact.mjs",
+    "import:mannequins": "node tools/import-mannequins.mjs",
     "verify": "node tools/check-fit.mjs",
-    "build:shirt": "node tools/build-shirt.mjs"
+    "build:shirt": "node tools/build-shirt.mjs",
+    "build:variants": "node tools/build-variants.mjs"
   }
 }

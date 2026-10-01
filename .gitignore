@@ -5,6 +5,7 @@ exports/
 .env.*
 *.log
 *.fbx
+!assets/mannequins/source/*.fbx
 *.blend
 *.ma
 *.zip

@@ -73,7 +73,93 @@
         "file": "r15-jacket.json",
         "sha256": "33d658e5c61344ede1ed03319ceab857d15d1976fd6d19bc8fc6757bd280159e",
         "triangles": 3612
+      },
+      {
+        "label": "Áo dáng dài",
+        "file": "r15-longline-shirt.json",
+        "sha256": "975e78d440f57273943ea961f44f7b63dc4916ba56049f46e9e254062d8b23fa",
+        "triangles": 3092
+      },
+      {
+        "label": "Hoodie thường · mũ hạ",
+        "file": "r15-hoodie-classic.json",
+        "sha256": "d114dc0cbd2722fe7c05b132a296ea201229034f3cc77d2102feeec0402f1980",
+        "triangles": 4132
+      },
+      {
+        "label": "Hoodie rộng · mũ hạ",
+        "file": "r15-hoodie-oversized.json",
+        "sha256": "d3158ca83ca822e77de3d19adf76bb065c21f27b1346a031d0801a60807144a6",
+        "triangles": 4280
+      },
+      {
+        "label": "Hoodie trùm đầu",
+        "file": "r15-hoodie-up.json",
+        "sha256": "89749d0d5edf52fe32f5236c6b901d2a7f06c59cac6641dfdda47f71b8c05764",
+        "triangles": 4536
+      },
+      {
+        "label": "Hoodie mở khóa",
+        "file": "r15-hoodie-zip.json",
+        "sha256": "01f102b207d865e0b7e57420cc4a8076326d1c8b46e0b04e1eca569dbbf25ae9",
+        "triangles": 4236
       }
     ]
+  },
+  "mannequinModels": {
+    "catalog": "assets/mannequins/catalog.json",
+    "importer": "tools/import-mannequins.mjs",
+    "sourceFileCount": 5,
+    "models": [
+      {
+        "id": "classic",
+        "label": "Classic Mannequin",
+        "bodyFile": "assets/mannequins/classic-body.json",
+        "targetSeedFile": "assets/mannequins/classic-cage-target.json",
+        "cagesFile": "assets/mannequins/classic-cages.json",
+        "sourceFiles": [
+          {
+            "file": "assets/mannequins/source/ClassicMannequin_With-Cages.fbx",
+            "sha256": "72eb65745962a377d9e78500eb2961f4abe3f1b0f4be74ef20cd346435c76ef1"
+          }
+        ]
+      },
+      {
+        "id": "rthro",
+        "label": "Rthro Mannequin",
+        "bodyFile": "assets/mannequins/rthro-body.json",
+        "targetSeedFile": "assets/mannequins/rthro-cage-target.json",
+        "cagesFile": "assets/mannequins/rthro-cages.json",
+        "sourceFiles": [
+          {
+            "file": "assets/mannequins/source/RthroMannequin_With-Cages.fbx",
+            "sha256": "e8519448131dde042830bce938cca86f211ef535ad80713b1938d3512320b249"
+          },
+          {
+            "file": "assets/mannequins/source/RthroMannequin.fbx",
+            "sha256": "e6db9e67326b9f5adc8ac47cf62903217d82e4554d19a65eca4281c4f104d838"
+          }
+        ]
+      },
+      {
+        "id": "rthro-slender",
+        "label": "Rthro Slender Mannequin",
+        "bodyFile": "assets/mannequins/rthro-slender-body.json",
+        "targetSeedFile": "assets/mannequins/rthro-slender-cage-target.json",
+        "cagesFile": "assets/mannequins/rthro-slender-cages.json",
+        "sourceFiles": [
+          {
+            "file": "assets/mannequins/source/RthroSlenderMannequin_With-Cages.fbx",
+            "sha256": "e1f92f00e37e98095a0e14e4254a35d1f87c190c780c447f0c684eff9694b532"
+          },
+          {
+            "file": "assets/mannequins/source/RthroSlenderMannequin.fbx",
+            "sha256": "995a0a4af01e5299be8e77d96f75c11bd48b5d88ae65568e0f4bb523b6e28a1a"
+          }
+        ]
+      }
+    ],
+    "transfer": "Same original R15 garment mesh, UVs and indices; one shared stabilized source-only MLS binding reused across imported bodies. Exact canonical polygon-corner UV correspondence.",
+    "rig": "Uploaded FBX templates contain no skeleton or skin clusters. Pose pivots are inferred from authored part cage seams."
   }
 }

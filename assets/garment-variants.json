@@ -8,9 +8,13 @@
   "algorithmParametersShared": true,
   "variants": [
     {
+      "id": "r15",
       "style": "short-shirt",
       "filename": "r15-shirt.json",
       "label": "Áo ngắn tay",
+      "family": "Áo cơ bản",
+      "color": "#078d96",
+      "description": "Áo tham chiếu ngắn tay.",
       "name": "CageLab_R15_TShirt",
       "sha256": "9aacd206ac2bf7fd022c4da735f5f0314cb4ac8a538c331271ca00e952691bc9",
       "design": {
@@ -48,9 +52,13 @@
       }
     },
     {
+      "id": "long",
       "style": "long-shirt",
       "filename": "r15-long-shirt.json",
       "label": "Áo dài tay",
+      "family": "Áo cơ bản",
+      "color": "#426fa7",
+      "description": "Tay dài đến cổ tay.",
       "name": "CageLab_R15_LongShirt",
       "sha256": "53c24be8c7bcf89f47b5e95eb11f7880c17c71203e212721caeee65e9ed43347",
       "design": {
@@ -116,9 +124,13 @@
       }
     },
     {
+      "id": "sweater",
       "style": "wide-sweater",
       "filename": "r15-wide-sweater.json",
       "label": "Sweater rộng",
+      "family": "Áo cơ bản",
+      "color": "#7855a0",
+      "description": "Thân rộng và vai mềm.",
       "name": "CageLab_R15_WideSweater",
       "sha256": "c4a4424a92f83590523af244307aae7a0bd0654a1495bba98e15cd9a6b68be84",
       "design": {
@@ -182,9 +194,13 @@
       }
     },
     {
+      "id": "jacket",
       "style": "jacket",
       "filename": "r15-jacket.json",
       "label": "Jacket mở phía trước",
+      "family": "Áo cơ bản",
+      "color": "#bd694d",
+      "description": "Hai vạt mở phía trước.",
       "name": "CageLab_R15_OpenJacket",
       "sha256": "33d658e5c61344ede1ed03319ceab857d15d1976fd6d19bc8fc6757bd280159e",
       "design": {
@@ -247,6 +263,806 @@
         "RightLowerArm+UpperTorso": 12,
         "RightLowerArm+RightUpperArm+UpperTorso": 5,
         "RightUpperArm+RightLowerArm+UpperTorso": 1
+      }
+    },
+    {
+      "id": "longline-shirt",
+      "style": "longline-shirt",
+      "filename": "r15-longline-shirt.json",
+      "label": "Áo dáng dài",
+      "family": "Áo cơ bản",
+      "color": "#a36378",
+      "description": "Gấu dài hơn để thử vùng hông.",
+      "name": "CageLab_R15_LonglineShirt",
+      "sha256": "975e78d440f57273943ea961f44f7b63dc4916ba56049f46e9e254062d8b23fa",
+      "design": {
+        "style": "longline-shirt",
+        "resolution": 0.34,
+        "thickness": 0.035,
+        "hem": 1.7199403934433015,
+        "cuff": 2.422261516308808,
+        "top": 4.120000302050999,
+        "neckline": 3.8287901425119957,
+        "collarRadii": [
+          0.71,
+          0.71
+        ],
+        "padding": 0.14,
+        "depthPadding": 0.17,
+        "shoulderBlend": 0.16,
+        "frontGap": 0,
+        "handGap": 0.12,
+        "sleeve": "long",
+        "underarmVents": true
+      },
+      "vertices": 1546,
+      "triangles": 3092,
+      "edges": 4638,
+      "boundaryEdges": 0,
+      "nonmanifoldEdges": 0,
+      "sourceBodyPenetrationSamples": 0,
+      "sourceBodyMaximumDepth": 0,
+      "sourceBodyMinimumClearance": 0.016850370352921074,
+      "sampleCount": 13914,
+      "groups": {
+        "LowerTorso": 246,
+        "LeftLowerArm": 148,
+        "LeftLowerArm+LowerTorso": 20,
+        "LeftLowerArm+UpperTorso": 24,
+        "UpperTorso+LeftLowerArm": 20,
+        "UpperTorso": 274,
+        "UpperTorso+RightLowerArm": 20,
+        "RightLowerArm+UpperTorso": 26,
+        "RightLowerArm+LowerTorso": 28,
+        "RightLowerArm": 144,
+        "LeftLowerArm+LeftUpperArm": 10,
+        "LeftUpperArm+LeftLowerArm": 18,
+        "LeftLowerArm+LeftUpperArm+UpperTorso": 4,
+        "LeftUpperArm+LeftLowerArm+UpperTorso": 12,
+        "UpperTorso+LeftLowerArm+LeftUpperArm": 2,
+        "UpperTorso+LeftUpperArm+LeftLowerArm": 10,
+        "UpperTorso+RightLowerArm+RightUpperArm": 4,
+        "UpperTorso+RightUpperArm+RightLowerArm": 8,
+        "RightLowerArm+RightUpperArm+UpperTorso": 4,
+        "RightUpperArm+RightLowerArm+UpperTorso": 12,
+        "RightLowerArm+RightUpperArm": 4,
+        "RightUpperArm+RightLowerArm": 26,
+        "LeftUpperArm": 112,
+        "LeftUpperArm+UpperTorso": 64,
+        "UpperTorso+LeftUpperArm": 56,
+        "UpperTorso+RightUpperArm": 42,
+        "RightUpperArm+UpperTorso": 62,
+        "RightUpperArm": 132,
+        "LowerTorso+LeftLowerArm": 14
+      }
+    },
+    {
+      "id": "hoodie-classic",
+      "style": "hoodie-classic",
+      "filename": "r15-hoodie-classic.json",
+      "label": "Hoodie thường · mũ hạ",
+      "family": "Hoodie",
+      "color": "#638d80",
+      "description": "Mũ hạ sau lưng, túi trước và tay dài.",
+      "name": "CageLab_R15_ClassicHoodie",
+      "sha256": "d114dc0cbd2722fe7c05b132a296ea201229034f3cc77d2102feeec0402f1980",
+      "design": {
+        "style": "hoodie-classic",
+        "resolution": 0.34,
+        "thickness": 0.035,
+        "hem": 2.0799403934433016,
+        "cuff": 2.422261516308808,
+        "top": 4.130000302050999,
+        "neckline": 3.8287901425119957,
+        "collarRadii": [
+          0.72,
+          0.72
+        ],
+        "padding": 0.16,
+        "depthPadding": 0.16,
+        "shoulderBlend": 0.18,
+        "frontGap": 0,
+        "handGap": 0.12,
+        "sleeve": "long",
+        "underarmVents": true,
+        "hood": "down",
+        "hoodBounds": {
+          "min": [
+            -0.82,
+            3.3100003020509994,
+            0.6450009598513375
+          ],
+          "max": [
+            0.82,
+            4.2000003020509995,
+            1.2700009598513375
+          ]
+        },
+        "faceOpening": false,
+        "pocket": "kangaroo",
+        "componentCount": 11,
+        "components": [
+          {
+            "name": "body-and-sleeves",
+            "outsideVertexStart": 0,
+            "outsideVertexCount": 747,
+            "innerVertexStart": 1041,
+            "thickness": 0.035
+          },
+          {
+            "name": "hood",
+            "outsideVertexStart": 747,
+            "outsideVertexCount": 94,
+            "innerVertexStart": 1788,
+            "thickness": 0.035
+          },
+          {
+            "name": "kangaroo-pocket",
+            "outsideVertexStart": 841,
+            "outsideVertexCount": 36,
+            "innerVertexStart": 1882,
+            "thickness": 0.035
+          },
+          {
+            "name": "left-drawcord",
+            "outsideVertexStart": 877,
+            "outsideVertexCount": 24,
+            "innerVertexStart": 1918,
+            "thickness": 0.007
+          },
+          {
+            "name": "right-drawcord",
+            "outsideVertexStart": 901,
+            "outsideVertexCount": 24,
+            "innerVertexStart": 1942,
+            "thickness": 0.007
+          },
+          {
+            "name": "left-cuff-front",
+            "outsideVertexStart": 925,
+            "outsideVertexCount": 18,
+            "innerVertexStart": 1966,
+            "thickness": 0.012
+          },
+          {
+            "name": "left-cuff-back",
+            "outsideVertexStart": 943,
+            "outsideVertexCount": 18,
+            "innerVertexStart": 1984,
+            "thickness": 0.012
+          },
+          {
+            "name": "right-cuff-front",
+            "outsideVertexStart": 961,
+            "outsideVertexCount": 18,
+            "innerVertexStart": 2002,
+            "thickness": 0.012
+          },
+          {
+            "name": "right-cuff-back",
+            "outsideVertexStart": 979,
+            "outsideVertexCount": 18,
+            "innerVertexStart": 2020,
+            "thickness": 0.012
+          },
+          {
+            "name": "hem-front",
+            "outsideVertexStart": 997,
+            "outsideVertexCount": 22,
+            "innerVertexStart": 2038,
+            "thickness": 0.012
+          },
+          {
+            "name": "hem-back",
+            "outsideVertexStart": 1019,
+            "outsideVertexCount": 22,
+            "innerVertexStart": 2060,
+            "thickness": 0.012
+          }
+        ],
+        "details": [
+          "hood",
+          "kangaroo-pocket",
+          "left-drawcord",
+          "right-drawcord",
+          "left-cuff-front",
+          "left-cuff-back",
+          "right-cuff-front",
+          "right-cuff-back",
+          "hem-front",
+          "hem-back"
+        ]
+      },
+      "vertices": 2082,
+      "triangles": 4132,
+      "edges": 6198,
+      "boundaryEdges": 0,
+      "nonmanifoldEdges": 0,
+      "sourceBodyPenetrationSamples": 0,
+      "sourceBodyMaximumDepth": 0,
+      "sourceBodyMinimumClearance": 0.01746196622967414,
+      "sampleCount": 18610,
+      "groups": {
+        "LowerTorso": 304,
+        "LeftLowerArm": 226,
+        "LeftLowerArm+UpperTorso": 24,
+        "LeftLowerArm+LowerTorso": 12,
+        "UpperTorso+LeftLowerArm": 26,
+        "UpperTorso": 590,
+        "UpperTorso+RightLowerArm": 28,
+        "RightLowerArm+UpperTorso": 26,
+        "RightLowerArm+LowerTorso": 20,
+        "RightLowerArm": 218,
+        "LeftLowerArm+LeftUpperArm": 10,
+        "LeftUpperArm": 110,
+        "LeftLowerArm+LeftUpperArm+UpperTorso": 4,
+        "LeftUpperArm+UpperTorso": 70,
+        "UpperTorso+LeftLowerArm+LeftUpperArm": 4,
+        "UpperTorso+LeftUpperArm": 72,
+        "UpperTorso+RightLowerArm+RightUpperArm": 4,
+        "UpperTorso+RightUpperArm": 72,
+        "RightLowerArm+RightUpperArm+UpperTorso": 4,
+        "RightUpperArm+UpperTorso": 72,
+        "RightUpperArm": 140,
+        "RightLowerArm+RightUpperArm": 2,
+        "RightUpperArm+RightLowerArm": 10,
+        "LowerTorso+LeftLowerArm": 16,
+        "LeftUpperArm+LeftLowerArm": 2,
+        "LeftUpperArm+LeftLowerArm+UpperTorso": 4,
+        "UpperTorso+LeftUpperArm+LeftLowerArm": 4,
+        "UpperTorso+RightUpperArm+RightLowerArm": 4,
+        "RightUpperArm+RightLowerArm+UpperTorso": 4
+      }
+    },
+    {
+      "id": "hoodie-oversized",
+      "style": "hoodie-oversized",
+      "filename": "r15-hoodie-oversized.json",
+      "label": "Hoodie rộng · mũ hạ",
+      "family": "Hoodie",
+      "color": "#bc945d",
+      "description": "Thân và tay rộng, mũ lớn hơn.",
+      "name": "CageLab_R15_OversizedHoodie",
+      "sha256": "d3158ca83ca822e77de3d19adf76bb065c21f27b1346a031d0801a60807144a6",
+      "design": {
+        "style": "hoodie-oversized",
+        "resolution": 0.37,
+        "thickness": 0.035,
+        "hem": 1.8799403934433014,
+        "cuff": 2.422261516308808,
+        "top": 4.170000302050999,
+        "neckline": 3.8287901425119957,
+        "collarRadii": [
+          0.75,
+          0.75
+        ],
+        "padding": 0.25,
+        "depthPadding": 0.23,
+        "shoulderBlend": 0.25,
+        "frontGap": 0,
+        "handGap": 0.12,
+        "sleeve": "long",
+        "underarmVents": true,
+        "hood": "down",
+        "hoodBounds": {
+          "min": [
+            -0.9184,
+            3.251600302050999,
+            0.7150009598513375
+          ],
+          "max": [
+            0.9184,
+            4.2400003020509995,
+            1.4132009598513375
+          ]
+        },
+        "faceOpening": false,
+        "pocket": "kangaroo",
+        "componentCount": 11,
+        "components": [
+          {
+            "name": "body-and-sleeves",
+            "outsideVertexStart": 0,
+            "outsideVertexCount": 778,
+            "innerVertexStart": 1072,
+            "thickness": 0.035
+          },
+          {
+            "name": "hood",
+            "outsideVertexStart": 778,
+            "outsideVertexCount": 94,
+            "innerVertexStart": 1850,
+            "thickness": 0.035
+          },
+          {
+            "name": "kangaroo-pocket",
+            "outsideVertexStart": 872,
+            "outsideVertexCount": 36,
+            "innerVertexStart": 1944,
+            "thickness": 0.035
+          },
+          {
+            "name": "left-drawcord",
+            "outsideVertexStart": 908,
+            "outsideVertexCount": 24,
+            "innerVertexStart": 1980,
+            "thickness": 0.007
+          },
+          {
+            "name": "right-drawcord",
+            "outsideVertexStart": 932,
+            "outsideVertexCount": 24,
+            "innerVertexStart": 2004,
+            "thickness": 0.007
+          },
+          {
+            "name": "left-cuff-front",
+            "outsideVertexStart": 956,
+            "outsideVertexCount": 18,
+            "innerVertexStart": 2028,
+            "thickness": 0.012
+          },
+          {
+            "name": "left-cuff-back",
+            "outsideVertexStart": 974,
+            "outsideVertexCount": 18,
+            "innerVertexStart": 2046,
+            "thickness": 0.012
+          },
+          {
+            "name": "right-cuff-front",
+            "outsideVertexStart": 992,
+            "outsideVertexCount": 18,
+            "innerVertexStart": 2064,
+            "thickness": 0.012
+          },
+          {
+            "name": "right-cuff-back",
+            "outsideVertexStart": 1010,
+            "outsideVertexCount": 18,
+            "innerVertexStart": 2082,
+            "thickness": 0.012
+          },
+          {
+            "name": "hem-front",
+            "outsideVertexStart": 1028,
+            "outsideVertexCount": 22,
+            "innerVertexStart": 2100,
+            "thickness": 0.012
+          },
+          {
+            "name": "hem-back",
+            "outsideVertexStart": 1050,
+            "outsideVertexCount": 22,
+            "innerVertexStart": 2122,
+            "thickness": 0.012
+          }
+        ],
+        "details": [
+          "hood",
+          "kangaroo-pocket",
+          "left-drawcord",
+          "right-drawcord",
+          "left-cuff-front",
+          "left-cuff-back",
+          "right-cuff-front",
+          "right-cuff-back",
+          "hem-front",
+          "hem-back"
+        ]
+      },
+      "vertices": 2144,
+      "triangles": 4280,
+      "edges": 6420,
+      "boundaryEdges": 0,
+      "nonmanifoldEdges": 0,
+      "sourceBodyPenetrationSamples": 0,
+      "sourceBodyMaximumDepth": 0,
+      "sourceBodyMinimumClearance": 0.07566330873018393,
+      "sampleCount": 19264,
+      "groups": {
+        "LowerTorso": 334,
+        "LowerTorso+LeftLowerArm": 20,
+        "LeftLowerArm+LowerTorso": 24,
+        "LowerTorso+RightLowerArm": 16,
+        "RightLowerArm+LowerTorso": 26,
+        "LeftLowerArm": 222,
+        "LeftLowerArm+UpperTorso": 16,
+        "UpperTorso+LeftLowerArm": 16,
+        "UpperTorso": 602,
+        "UpperTorso+RightLowerArm": 16,
+        "RightLowerArm+UpperTorso": 16,
+        "RightLowerArm": 202,
+        "LeftLowerArm+LeftUpperArm": 2,
+        "LeftUpperArm+LeftLowerArm": 28,
+        "LeftUpperArm+LeftLowerArm+UpperTorso": 16,
+        "UpperTorso+LeftLowerArm+LeftUpperArm": 4,
+        "UpperTorso+LeftUpperArm+LeftLowerArm": 12,
+        "UpperTorso+RightUpperArm+RightLowerArm": 12,
+        "UpperTorso+RightLowerArm+RightUpperArm": 4,
+        "RightUpperArm+RightLowerArm+UpperTorso": 16,
+        "RightUpperArm+RightLowerArm": 26,
+        "LeftUpperArm": 104,
+        "LeftUpperArm+UpperTorso": 58,
+        "UpperTorso+LeftUpperArm": 80,
+        "UpperTorso+RightUpperArm": 82,
+        "RightUpperArm+UpperTorso": 60,
+        "RightUpperArm": 128,
+        "RightLowerArm+RightUpperArm": 2
+      }
+    },
+    {
+      "id": "hoodie-up",
+      "style": "hoodie-up",
+      "filename": "r15-hoodie-up.json",
+      "label": "Hoodie trùm đầu",
+      "family": "Hoodie",
+      "color": "#7369a7",
+      "description": "Mũ bao quanh đầu, chừa mặt phía trước.",
+      "name": "CageLab_R15_RaisedHoodie",
+      "sha256": "89749d0d5edf52fe32f5236c6b901d2a7f06c59cac6641dfdda47f71b8c05764",
+      "design": {
+        "style": "hoodie-up",
+        "resolution": 0.36,
+        "thickness": 0.035,
+        "hem": 2.0799403934433016,
+        "cuff": 2.422261516308808,
+        "top": 4.130000302050999,
+        "neckline": 3.8287901425119957,
+        "collarRadii": [
+          0.73,
+          0.73
+        ],
+        "padding": 0.17,
+        "depthPadding": 0.17,
+        "shoulderBlend": 0.19,
+        "frontGap": 0,
+        "handGap": 0.12,
+        "sleeve": "long",
+        "underarmVents": true,
+        "hood": "up",
+        "hoodBounds": {
+          "min": [
+            -0.81,
+            3.7287901425119956,
+            -0.81
+          ],
+          "max": [
+            0.81,
+            5.301210082605818,
+            0.81
+          ]
+        },
+        "faceOpening": true,
+        "pocket": "kangaroo",
+        "componentCount": 11,
+        "components": [
+          {
+            "name": "body-and-sleeves",
+            "outsideVertexStart": 0,
+            "outsideVertexCount": 751,
+            "innerVertexStart": 1142,
+            "thickness": 0.035
+          },
+          {
+            "name": "hood",
+            "outsideVertexStart": 751,
+            "outsideVertexCount": 191,
+            "innerVertexStart": 1893,
+            "thickness": 0.035
+          },
+          {
+            "name": "kangaroo-pocket",
+            "outsideVertexStart": 942,
+            "outsideVertexCount": 36,
+            "innerVertexStart": 2084,
+            "thickness": 0.035
+          },
+          {
+            "name": "left-drawcord",
+            "outsideVertexStart": 978,
+            "outsideVertexCount": 24,
+            "innerVertexStart": 2120,
+            "thickness": 0.007
+          },
+          {
+            "name": "right-drawcord",
+            "outsideVertexStart": 1002,
+            "outsideVertexCount": 24,
+            "innerVertexStart": 2144,
+            "thickness": 0.007
+          },
+          {
+            "name": "left-cuff-front",
+            "outsideVertexStart": 1026,
+            "outsideVertexCount": 18,
+            "innerVertexStart": 2168,
+            "thickness": 0.012
+          },
+          {
+            "name": "left-cuff-back",
+            "outsideVertexStart": 1044,
+            "outsideVertexCount": 18,
+            "innerVertexStart": 2186,
+            "thickness": 0.012
+          },
+          {
+            "name": "right-cuff-front",
+            "outsideVertexStart": 1062,
+            "outsideVertexCount": 18,
+            "innerVertexStart": 2204,
+            "thickness": 0.012
+          },
+          {
+            "name": "right-cuff-back",
+            "outsideVertexStart": 1080,
+            "outsideVertexCount": 18,
+            "innerVertexStart": 2222,
+            "thickness": 0.012
+          },
+          {
+            "name": "hem-front",
+            "outsideVertexStart": 1098,
+            "outsideVertexCount": 22,
+            "innerVertexStart": 2240,
+            "thickness": 0.012
+          },
+          {
+            "name": "hem-back",
+            "outsideVertexStart": 1120,
+            "outsideVertexCount": 22,
+            "innerVertexStart": 2262,
+            "thickness": 0.012
+          }
+        ],
+        "details": [
+          "hood",
+          "kangaroo-pocket",
+          "left-drawcord",
+          "right-drawcord",
+          "left-cuff-front",
+          "left-cuff-back",
+          "right-cuff-front",
+          "right-cuff-back",
+          "hem-front",
+          "hem-back"
+        ]
+      },
+      "vertices": 2284,
+      "triangles": 4536,
+      "edges": 6804,
+      "boundaryEdges": 0,
+      "nonmanifoldEdges": 0,
+      "sourceBodyPenetrationSamples": 0,
+      "sourceBodyMaximumDepth": 0,
+      "sourceBodyMinimumClearance": 0.021333880442363458,
+      "sampleCount": 20428,
+      "groups": {
+        "LowerTorso": 292,
+        "LeftLowerArm": 228,
+        "LeftLowerArm+LowerTorso": 12,
+        "LeftLowerArm+UpperTorso": 24,
+        "UpperTorso+LeftLowerArm": 26,
+        "UpperTorso": 392,
+        "UpperTorso+RightLowerArm": 28,
+        "RightLowerArm+UpperTorso": 26,
+        "RightLowerArm+LowerTorso": 22,
+        "RightLowerArm": 218,
+        "LeftLowerArm+LeftUpperArm": 10,
+        "LeftUpperArm": 126,
+        "LeftLowerArm+LeftUpperArm+UpperTorso": 4,
+        "LeftUpperArm+UpperTorso": 72,
+        "UpperTorso+LeftLowerArm+LeftUpperArm": 4,
+        "UpperTorso+LeftUpperArm": 72,
+        "UpperTorso+RightLowerArm+RightUpperArm": 4,
+        "UpperTorso+RightUpperArm": 72,
+        "RightLowerArm+RightUpperArm+UpperTorso": 4,
+        "RightUpperArm+UpperTorso": 70,
+        "RightLowerArm+RightUpperArm": 4,
+        "RightUpperArm": 148,
+        "RightUpperArm+RightLowerArm": 10,
+        "LowerTorso+LeftLowerArm": 14,
+        "LeftUpperArm+LeftLowerArm": 4,
+        "LeftUpperArm+LeftLowerArm+UpperTorso": 4,
+        "UpperTorso+LeftUpperArm+LeftLowerArm": 4,
+        "UpperTorso+RightUpperArm+RightLowerArm": 4,
+        "RightUpperArm+RightLowerArm+UpperTorso": 4,
+        "Head+UpperTorso": 112,
+        "Head": 270
+      }
+    },
+    {
+      "id": "hoodie-zip",
+      "style": "hoodie-zip",
+      "filename": "r15-hoodie-zip.json",
+      "label": "Hoodie mở khóa",
+      "family": "Hoodie",
+      "color": "#4c6e8c",
+      "description": "Mũ hạ và thân áo mở phía trước.",
+      "name": "CageLab_R15_ZipHoodie",
+      "sha256": "01f102b207d865e0b7e57420cc4a8076326d1c8b46e0b04e1eca569dbbf25ae9",
+      "design": {
+        "style": "hoodie-zip",
+        "resolution": 0.35,
+        "thickness": 0.035,
+        "hem": 2.0599403934433016,
+        "cuff": 2.422261516308808,
+        "top": 4.130000302050999,
+        "neckline": 3.8287901425119957,
+        "collarRadii": [
+          0.72,
+          0.72
+        ],
+        "padding": 0.17,
+        "depthPadding": 0.17,
+        "shoulderBlend": 0.19,
+        "frontGap": 0.055,
+        "handGap": 0.12,
+        "sleeve": "long",
+        "underarmVents": true,
+        "hood": "down",
+        "hoodBounds": {
+          "min": [
+            -0.82,
+            3.3100003020509994,
+            0.6550009598513375
+          ],
+          "max": [
+            0.82,
+            4.2000003020509995,
+            1.2800009598513375
+          ]
+        },
+        "faceOpening": false,
+        "pocket": "split",
+        "componentCount": 13,
+        "components": [
+          {
+            "name": "body-and-sleeves",
+            "outsideVertexStart": 0,
+            "outsideVertexCount": 750,
+            "innerVertexStart": 1068,
+            "thickness": 0.035
+          },
+          {
+            "name": "hood",
+            "outsideVertexStart": 750,
+            "outsideVertexCount": 94,
+            "innerVertexStart": 1818,
+            "thickness": 0.035
+          },
+          {
+            "name": "left-pocket",
+            "outsideVertexStart": 844,
+            "outsideVertexCount": 20,
+            "innerVertexStart": 1912,
+            "thickness": 0.035
+          },
+          {
+            "name": "right-pocket",
+            "outsideVertexStart": 864,
+            "outsideVertexCount": 20,
+            "innerVertexStart": 1932,
+            "thickness": 0.035
+          },
+          {
+            "name": "left-drawcord",
+            "outsideVertexStart": 884,
+            "outsideVertexCount": 24,
+            "innerVertexStart": 1952,
+            "thickness": 0.007
+          },
+          {
+            "name": "right-drawcord",
+            "outsideVertexStart": 908,
+            "outsideVertexCount": 24,
+            "innerVertexStart": 1976,
+            "thickness": 0.007
+          },
+          {
+            "name": "zipper",
+            "outsideVertexStart": 932,
+            "outsideVertexCount": 20,
+            "innerVertexStart": 2000,
+            "thickness": 0.008
+          },
+          {
+            "name": "left-cuff-front",
+            "outsideVertexStart": 952,
+            "outsideVertexCount": 18,
+            "innerVertexStart": 2020,
+            "thickness": 0.012
+          },
+          {
+            "name": "left-cuff-back",
+            "outsideVertexStart": 970,
+            "outsideVertexCount": 18,
+            "innerVertexStart": 2038,
+            "thickness": 0.012
+          },
+          {
+            "name": "right-cuff-front",
+            "outsideVertexStart": 988,
+            "outsideVertexCount": 18,
+            "innerVertexStart": 2056,
+            "thickness": 0.012
+          },
+          {
+            "name": "right-cuff-back",
+            "outsideVertexStart": 1006,
+            "outsideVertexCount": 18,
+            "innerVertexStart": 2074,
+            "thickness": 0.012
+          },
+          {
+            "name": "hem-front",
+            "outsideVertexStart": 1024,
+            "outsideVertexCount": 22,
+            "innerVertexStart": 2092,
+            "thickness": 0.012
+          },
+          {
+            "name": "hem-back",
+            "outsideVertexStart": 1046,
+            "outsideVertexCount": 22,
+            "innerVertexStart": 2114,
+            "thickness": 0.012
+          }
+        ],
+        "details": [
+          "hood",
+          "left-pocket",
+          "right-pocket",
+          "left-drawcord",
+          "right-drawcord",
+          "zipper",
+          "left-cuff-front",
+          "left-cuff-back",
+          "right-cuff-front",
+          "right-cuff-back",
+          "hem-front",
+          "hem-back"
+        ]
+      },
+      "vertices": 2136,
+      "triangles": 4236,
+      "edges": 6354,
+      "boundaryEdges": 0,
+      "nonmanifoldEdges": 0,
+      "sourceBodyPenetrationSamples": 0,
+      "sourceBodyMaximumDepth": 0,
+      "sourceBodyMinimumClearance": 0.01930538924237246,
+      "sampleCount": 19080,
+      "groups": {
+        "LowerTorso": 294,
+        "LeftLowerArm": 222,
+        "LeftLowerArm+LowerTorso": 16,
+        "LeftLowerArm+UpperTorso": 24,
+        "UpperTorso+LeftLowerArm": 26,
+        "UpperTorso": 628,
+        "UpperTorso+RightLowerArm": 28,
+        "RightLowerArm+UpperTorso": 26,
+        "RightLowerArm+LowerTorso": 20,
+        "RightLowerArm": 220,
+        "LeftLowerArm+LeftUpperArm": 10,
+        "LeftUpperArm+LeftLowerArm": 18,
+        "LeftLowerArm+LeftUpperArm+UpperTorso": 4,
+        "LeftUpperArm+LeftLowerArm+UpperTorso": 12,
+        "UpperTorso+LeftLowerArm+LeftUpperArm": 4,
+        "UpperTorso+LeftUpperArm+LeftLowerArm": 12,
+        "UpperTorso+RightLowerArm+RightUpperArm": 4,
+        "UpperTorso+RightUpperArm+RightLowerArm": 12,
+        "RightLowerArm+RightUpperArm+UpperTorso": 4,
+        "RightUpperArm+RightLowerArm+UpperTorso": 12,
+        "RightLowerArm+RightUpperArm": 4,
+        "RightUpperArm+RightLowerArm": 24,
+        "LeftUpperArm": 110,
+        "LeftUpperArm+UpperTorso": 64,
+        "UpperTorso+LeftUpperArm": 64,
+        "UpperTorso+RightUpperArm": 64,
+        "RightUpperArm+UpperTorso": 62,
+        "RightUpperArm": 132,
+        "LowerTorso+LeftLowerArm": 16
       }
     }
   ]

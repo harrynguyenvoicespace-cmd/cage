@@ -233,6 +233,11 @@ export const GARMENT_STYLES = {
   'long-shirt': { name: 'CageLab_R15_LongShirt', label: 'Áo dài tay', sleeve: 'long', padding: .115, depthPadding: .115, radius: .12, shoulderBlend: .13, topEase: .105, hemEase: .12, collarX: .70, collarZ: .70, frontGap: 0, resolution: .30 },
   'wide-sweater': { name: 'CageLab_R15_WideSweater', label: 'Sweater rộng', sleeve: 'long', padding: .20, depthPadding: .18, radius: .18, shoulderBlend: .22, topEase: .13, hemEase: .10, collarX: .73, collarZ: .73, frontGap: 0, resolution: .32 },
   jacket: { name: 'CageLab_R15_OpenJacket', label: 'Jacket mở phía trước', sleeve: 'long', padding: .15, depthPadding: .15, radius: .145, shoulderBlend: .17, topEase: .12, hemEase: .08, collarX: .72, collarZ: .72, frontGap: .21, resolution: .31 },
+  'longline-shirt': { name: 'CageLab_R15_LonglineShirt', label: 'Áo dài thân', sleeve: 'long', padding: .14, depthPadding: .17, radius: .14, shoulderBlend: .16, topEase: .12, hemEase: -.28, collarX: .71, collarZ: .71, frontGap: 0, resolution: .34 },
+  'hoodie-classic': { name: 'CageLab_R15_ClassicHoodie', label: 'Hoodie cổ điển', sleeve: 'long', padding: .16, depthPadding: .16, radius: .15, shoulderBlend: .18, topEase: .13, hemEase: .08, collarX: .72, collarZ: .72, frontGap: 0, hood: 'down', pocket: 'kangaroo', resolution: .34 },
+  'hoodie-oversized': { name: 'CageLab_R15_OversizedHoodie', label: 'Hoodie oversized', sleeve: 'long', padding: .25, depthPadding: .23, radius: .20, shoulderBlend: .25, topEase: .17, hemEase: -.12, collarX: .75, collarZ: .75, frontGap: 0, hood: 'down', hoodScale: 1.12, pocket: 'kangaroo', resolution: .37 },
+  'hoodie-up': { name: 'CageLab_R15_RaisedHoodie', label: 'Hoodie đội mũ', sleeve: 'long', padding: .17, depthPadding: .17, radius: .16, shoulderBlend: .19, topEase: .13, hemEase: .08, collarX: .73, collarZ: .73, frontGap: 0, hood: 'up', pocket: 'kangaroo', resolution: .36 },
+  'hoodie-zip': { name: 'CageLab_R15_ZipHoodie', label: 'Hoodie khóa kéo', sleeve: 'long', padding: .17, depthPadding: .17, radius: .16, shoulderBlend: .19, topEase: .13, hemEase: .06, collarX: .72, collarZ: .72, frontGap: .055, hood: 'down', pocket: 'split', resolution: .35 },
 };
 
 export function createR15Garment(bodyAsset, { style = 'short-shirt', thickness = .035, resolution = null, ...geometry } = {}) {
@@ -300,10 +305,147 @@ export function createR15Garment(bodyAsset, { style = 'short-shirt', thickness =
     vertexParts.push(dominant); vertexGroups.push(group);
     uv.push((x / (max[0] - min[0]) + .5) * .95 + (z < 0 ? .025 : 0), (y - hem) / (top - hem));
   });
-  return {
+  const garment = {
     schemaVersion: 1, name: config.name, style, label: config.label, positions, indices, uv, vertexGroups, vertexParts,
     source: { kind: 'independent-parametric-garment', authoredAgainst: bodyAsset.source.file, method: 'Shared rounded implicit torso and sleeve union; neck, hem, cuffs and optional open-front cuts; inward fabric shell with sewn rims. No cage positions or topology used.' },
     design: { style, resolution: config.resolution, thickness, hem, cuff, top, neckline, collarRadii: [config.collarX, config.collarZ], padding: config.padding, depthPadding: config.depthPadding, shoulderBlend: config.shoulderBlend, frontGap: config.frontGap, handGap: .12, sleeve: config.sleeve, underarmVents: true },
     stats: { vertexCount: positions.length / 3, triangleCount: indices.length / 3, outsideVertexCount: shell.outsideVertexCount, rimEdges: shell.boundaryEdges },
   };
+  if (config.hood) return addHoodieDetails(garment, bodyAsset, config);
+  if (style === 'longline-shirt') {
+    // Both faces of a fabric vertex share a texture coordinate and region.
+    // Retain earlier recipes byte-for-byte while keeping new shells paired.
+    const count = shell.outsideVertexCount;
+    garment.uv = [...uv.slice(0, count * 2), ...uv.slice(0, count * 2)];
+    garment.vertexGroups = [...vertexGroups.slice(0, count), ...vertexGroups.slice(0, count).map(group => [...group])];
+    garment.vertexParts = [...vertexParts.slice(0, count), ...vertexParts.slice(0, count)];
+  }
+  return garment;
+}
+
+/** Detail panels are authored from avatar measurements like the main cloth.
+ * Each panel has its own inward shell and sewn rim. Merging preserves the
+ * global outer/inner vertex pairing used by the common cage binding. */
+function addHoodieDetails(garment, bodyAsset, config) {
+  const body = Object.fromEntries(bodyAsset.parts.map(part => [part.name, part]));
+  const { top, hem, cuff, neckline } = garment.design;
+  const torso = body.UpperTorso.bounds, head = body.Head.bounds;
+  const depth = Math.max(Math.abs(torso.min[2]), Math.abs(torso.max[2]));
+  const side = Math.max(Math.abs(torso.min[0]), Math.abs(torso.max[0]));
+  const clothDepth = depth + config.depthPadding;
+  const components = [{
+    shell: { vertices: Array.from({ length: garment.stats.vertexCount }, (_, i) => garment.positions.slice(i * 3, i * 3 + 3)), faces: Array.from({ length: garment.stats.triangleCount }, (_, i) => garment.indices.slice(i * 3, i * 3 + 3)), outsideVertexCount: garment.stats.outsideVertexCount, boundaryEdges: garment.stats.rimEdges },
+    groups: [...garment.vertexGroups.slice(0, garment.stats.outsideVertexCount), ...garment.vertexGroups.slice(0, garment.stats.outsideVertexCount).map(group => [...group])],
+    parts: [...garment.vertexParts.slice(0, garment.stats.outsideVertexCount), ...garment.vertexParts.slice(0, garment.stats.outsideVertexCount)],
+    uv: [...garment.uv.slice(0, garment.stats.outsideVertexCount * 2), ...garment.uv.slice(0, garment.stats.outsideVertexCount * 2)],
+    name: 'body-and-sleeves', thickness: config.thickness,
+  }];
+  const add = (name, mesh, groups, thickness = config.thickness) => {
+    const shell = addShell(compact(mesh), thickness);
+    const outerGroups = shell.vertices.slice(0, shell.outsideVertexCount).map(p => typeof groups === 'function' ? groups(p) : [...groups]);
+    const vertexGroups = [...outerGroups, ...outerGroups.map(group => [...group])];
+    const outerUV = shell.vertices.slice(0, shell.outsideVertexCount).flatMap(([x, y]) => [.5 + x / 5, (y - hem) / (head.max[1] + .25 - hem)]);
+    components.push({ name, shell, groups: vertexGroups, parts: vertexGroups.map(group => group[0]), uv: [...outerUV, ...outerUV], thickness });
+  };
+  // Raised hoods retain their real open face and lower neck opening. A lowered
+  // hood is a hollow folded pouch behind the neck, with an open upper rim.
+  const scale = config.hoodScale ?? 1;
+  const hoodMin = config.hood === 'up' ? [-.81, neckline - .10, -.81] : [-.82 * scale, top - .82 * scale, clothDepth - .015];
+  const hoodMax = config.hood === 'up' ? [.81, head.max[1] + .20, .81] : [.82 * scale, top + .07, clothDepth + .61 * scale];
+  const hoodRadius = config.hood === 'up' ? .21 : .23 * scale;
+  const hoodField = p => roundedBox(p, hoodMin, hoodMax, hoodRadius);
+  const hoodRaw = surface(hoodField, hoodMin.map(v => v - .025), hoodMax.map(v => v + .025), config.resolution * 1.03);
+  refineSurface(hoodRaw, hoodField);
+  const hoodCuts = config.hood === 'up' ? [
+    p => p[1] - torso.max[1] - .045,
+    p => Math.max((Math.abs(p[0] / .675) ** 8 + Math.abs((p[1] - (head.min[1] + head.max[1]) * .5 + .055) / .755) ** 8) ** (1 / 8) - 1, p[2] + .20),
+  ] : [p => top - .045 - p[1]];
+  add('hood', reducePlanar(compact(cutSurface(hoodRaw, hoodCuts))), p => config.hood === 'up' ? p[1] < torso.max[1] + .22 ? ['Head', 'UpperTorso'] : ['Head'] : ['UpperTorso']);
+
+  // Parametric grids make pockets and rib bands visibly raised without an
+  // extra dense implicit grid. The front of this avatar faces negative Z.
+  const panel = (point, columns = 8, rows = 3, front = true) => {
+    const vertices = [], faces = [];
+    for (let row = 0; row <= rows; row++) for (let column = 0; column <= columns; column++) vertices.push(point(column / columns, row / rows));
+    for (let row = 0; row < rows; row++) for (let column = 0; column < columns; column++) {
+      const a = row * (columns + 1) + column, b = a + 1, c = a + columns + 1, d = c + 1;
+      faces.push(...(front ? [[a, c, b], [b, c, d]] : [[a, b, c], [b, d, c]]));
+    }
+    return { vertices, faces };
+  };
+  const pocketBottom = hem + .34, pocketTop = Math.min(hem + 1.00, top - .77);
+  const pocket = (center, width) => panel((u, v) => {
+    const taper = 1 - .28 * Math.max(0, (v - .6) / .4);
+    return [center + (u * 2 - 1) * width * taper, pocketBottom + (pocketTop - pocketBottom) * v, -clothDepth - .065 - .04 * Math.sin(Math.PI * u) * Math.sin(Math.PI * v)];
+  }, config.pocket === 'split' ? 4 : 8, 3);
+  if (config.pocket === 'split') {
+    add('left-pocket', pocket(-.39, .28), ['UpperTorso']);
+    add('right-pocket', pocket(.39, .28), ['UpperTorso']);
+  } else add('kangaroo-pocket', pocket(0, .65 * (config.hoodScale ?? 1)), ['UpperTorso']);
+
+  const tube = (centers, radius, segments = 6) => {
+    const vertices = centers.flatMap(center => Array.from({ length: segments }, (_, i) => { const angle = i / segments * Math.PI * 2; return [center[0] + Math.cos(angle) * radius, center[1], center[2] + Math.sin(angle) * radius]; }));
+    const faces = [];
+    for (let row = 0; row < centers.length - 1; row++) for (let column = 0; column < segments; column++) {
+      const a = row * segments + column, b = row * segments + (column + 1) % segments, c = a + segments, d = b + segments;
+      faces.push([a, b, c], [b, d, c]);
+    }
+    return { vertices, faces };
+  };
+  for (const direction of [-1, 1]) {
+    const cord = Array.from({ length: 4 }, (_, row) => { const t = row / 3; return [direction * (.25 + .035 * t + .024 * Math.sin(Math.PI * t)), top - .19 - .69 * t, -clothDepth - .105 - .008 * Math.sin(Math.PI * t)]; });
+    add(`${direction < 0 ? 'left' : 'right'}-drawcord`, tube(cord, .021), ['UpperTorso'], Math.min(config.thickness, .007));
+  }
+  if (config.pocket === 'split') {
+    const zipper = Array.from({ length: 5 }, (_, i) => [0, top - .28 - (top - hem - .43) * i / 4, -clothDepth - .026]);
+    add('zipper', tube(zipper, .022, 4), ['UpperTorso'], Math.min(config.thickness, .008));
+  }
+  // R15 arms touch the torso at rest. Bands cover each visible cuff panel;
+  // wrapping a full ring through that touching inner side would hit the body.
+  for (const direction of [-1, 1]) {
+    const sideName = direction < 0 ? 'Left' : 'Right';
+    const arm = body[`${sideName}LowerArm`].bounds;
+    const edge = Math.max(Math.abs(arm.min[0]), Math.abs(arm.max[0])) + config.padding;
+    for (const front of [true, false]) add(`${sideName.toLowerCase()}-cuff-${front ? 'front' : 'back'}`, panel((u, v) => {
+      const x = direction * (side + .18 + (edge - side - .22) * u);
+      return [x, cuff + .04 + .12 * v, (front ? -1 : 1) * (clothDepth + .012 + .006 * Math.sin(u * Math.PI * 16) ** 2)];
+    }, 8, 1, front !== (direction < 0)), [`${sideName}LowerArm`], Math.min(config.thickness, .012));
+  }
+  for (const front of [true, false]) add(`hem-${front ? 'front' : 'back'}`, panel((u, v) => [(u * 2 - 1) * (side - .12), hem + .025 + .125 * v, (front ? -1 : 1) * (clothDepth + .012 + .006 * Math.sin(u * Math.PI * 20) ** 2)], 10, 1, front), ['LowerTorso'], Math.min(config.thickness, .012));
+
+  const outsideCount = components.reduce((sum, component) => sum + component.shell.outsideVertexCount, 0);
+  const positions = [], indices = [], vertexGroups = [], vertexParts = [], uv = [];
+  for (const inner of [false, true]) for (const component of components) {
+    const count = component.shell.outsideVertexCount, begin = inner ? count : 0;
+    positions.push(...component.shell.vertices.slice(begin, begin + count).flat());
+    vertexGroups.push(...component.groups.slice(begin, begin + count));
+    vertexParts.push(...component.parts.slice(begin, begin + count));
+    uv.push(...component.uv.slice(begin * 2, (begin + count) * 2));
+  }
+  let outsideOffset = 0;
+  const componentMetadata = [];
+  for (const { shell, name, thickness } of components) {
+    const count = shell.outsideVertexCount;
+    indices.push(...shell.faces.flatMap(face => face.map(index => index < count ? index + outsideOffset : index - count + outsideOffset + outsideCount)));
+    componentMetadata.push({ name, outsideVertexStart: outsideOffset, outsideVertexCount: count, innerVertexStart: outsideOffset + outsideCount, thickness });
+    outsideOffset += count;
+  }
+  return {
+    ...garment, positions, indices, vertexGroups, vertexParts, uv,
+    source: { ...garment.source, method: `${garment.source.method} Body-authored hollow ${config.hood} hood, sewn pocket panels, drawcord tubes and ribbed cuff/hem panels; globally paired fabric shells.` },
+    design: { ...garment.design, hood: config.hood, hoodBounds: { min: hoodMin, max: hoodMax }, faceOpening: config.hood === 'up', pocket: config.pocket, componentCount: components.length, components: componentMetadata, details: components.slice(1).map(component => component.name) },
+    stats: { vertexCount: positions.length / 3, triangleCount: indices.length / 3, outsideVertexCount: outsideCount, rimEdges: components.reduce((sum, component) => sum + component.shell.boundaryEdges, 0) },
+  };
+}
+
+function refineSurface(mesh, field) {
+  mesh.vertices.forEach(p => {
+    for (let pass = 0; pass < 8; pass++) {
+      const distance = field(p);
+      if (Math.abs(distance) < 1e-7) break;
+      const gradient = [0, 1, 2].map(axis => { const a = [...p], b = [...p]; a[axis] += .0005; b[axis] -= .0005; return (field(a) - field(b)) / .001; });
+      const scale = distance / (dot(gradient, gradient) || 1);
+      gradient.forEach((v, axis) => { p[axis] -= v * scale; });
+    }
+  });
 }
