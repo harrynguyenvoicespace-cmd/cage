@@ -1,0 +1,79 @@
+{
+  "r15": {
+    "file": "D:/bloxlab/frontend/public/assets/skin-examples/r15-rig.json",
+    "sha256": "f1bc04c9d1689875af4af8ca673e244e301c2869e2d609813f6708a570ae3cce"
+  },
+  "cage": {
+    "url": "https://prod.docsiteassets.roblox.com/assets/modeling/meshes/reference-files/Clothing_Cage_Templates.zip",
+    "docs": "https://create.roblox.com/docs/art/accessories/rig-and-cage-existing-models",
+    "sha256": "607b9f630555e89ee0403623b397cf5ab0f4089244253c6481f9bd7d6ecd260f",
+    "zipSha256": "7a23dc3dbbfa4a2fe72383a4f59a6abd1f701aabcecad0072e91809ac6742e4b"
+  },
+  "tshirt": {
+    "url": "https://prod.docsiteassets.roblox.com/assets/accessories/reference-files/Tshirt-model.fbx",
+    "docs": "https://create.roblox.com/docs/avatar/resources",
+    "sha256": "79343852f6ead85411a6e6b69212c50dc8d75065cb9365c66101f97970a35748"
+  },
+  "three": {
+    "revision": "183",
+    "license": "MIT",
+    "source": "https://threejs.org/"
+  },
+  "algorithmReferences": [
+    "https://create.roblox.com/docs/avatar/layered-accessories/caging-best-practices",
+    "https://docs.blender.org/manual/en/latest/modeling/modifiers/deform/shrinkwrap.html",
+    "https://github.com/Junyu-Liu-Nate/Shape-Deformation-with-Cages"
+  ],
+  "blockyBodyReference": {
+    "sourceUrl": "https://prod.docsiteassets.roblox.com/assets/avatar/dynamic-heads/reference-files/BlockyCharacter.fbx",
+    "sourceDocs": "https://create.roblox.com/docs/avatar/resources",
+    "sourceSha256": "3bce4f161bc9b3825d4580e756c0a2da3b737cfbff1c2d41f47405aabe32803a",
+    "canonicalCageSha256": "b48d1e603f06213d128ccff683a699aaf4f590cb8c1060c31feb56f8d6d7acec",
+    "targetBodySha256": "47fb7775cc234042ab0e4af970209e17fd91613bbccb63a28cfb57c837cce338",
+    "sourceNormalizationOffset": [
+      2.384185791015625e-7,
+      2.0060822486827816,
+      0.004430050166376542
+    ],
+    "orientation": {
+      "rotationAxis": "Y",
+      "rotationDegrees": 180,
+      "determinant": 1,
+      "reflection": false
+    },
+    "alignment": "Same-named official body geometry bbox to actual BloxLab R15 part bbox, then apply that affine transform to the part cage. Average source duplicate UV candidates per owner and joint candidates equally across owners."
+  },
+  "clothModels": {
+    "factory": "src/garment.js:createR15Garment",
+    "sourceBody": {
+      "file": "D:/bloxlab/frontend/public/assets/skin-examples/r15-rig.json",
+      "sha256": "f1bc04c9d1689875af4af8ca673e244e301c2869e2d609813f6708a570ae3cce"
+    },
+    "variants": [
+      {
+        "label": "Áo ngắn tay",
+        "file": "r15-shirt.json",
+        "sha256": "9aacd206ac2bf7fd022c4da735f5f0314cb4ac8a538c331271ca00e952691bc9",
+        "triangles": 2864
+      },
+      {
+        "label": "Áo dài tay",
+        "file": "r15-long-shirt.json",
+        "sha256": "53c24be8c7bcf89f47b5e95eb11f7880c17c71203e212721caeee65e9ed43347",
+        "triangles": 3188
+      },
+      {
+        "label": "Sweater rộng",
+        "file": "r15-wide-sweater.json",
+        "sha256": "c4a4424a92f83590523af244307aae7a0bd0654a1495bba98e15cd9a6b68be84",
+        "triangles": 3892
+      },
+      {
+        "label": "Jacket mở phía trước",
+        "file": "r15-jacket.json",
+        "sha256": "33d658e5c61344ede1ed03319ceab857d15d1976fd6d19bc8fc6757bd280159e",
+        "triangles": 3612
+      }
+    ]
+  }
+}
